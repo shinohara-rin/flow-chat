@@ -161,7 +161,7 @@ async function deleteRoomConfirmed() {
       <h2 class="text-lg font-medium">
         Chats
       </h2>
-      <Button variant="ghost" size="icon" class="h-8 w-8" @click="createNewChat">
+      <Button data-testid="new-chat" variant="ghost" size="icon" class="h-8 w-8" @click="createNewChat">
         <div class="i-solar-add-circle-bold text-lg" />
       </Button>
     </div>

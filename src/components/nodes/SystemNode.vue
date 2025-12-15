@@ -8,6 +8,9 @@ defineProps<NodeProps>()
 
 <template>
   <Node
+    data-testid="flow-node"
+    data-node-role="system"
+    :data-node-id="data.message.id"
     bg="gray-100 dark:gray-900"
     :inactive="data.inactive"
     :class="data.selected ? 'b-gray-300 dark:b-gray-700' : 'b-gray-200 dark:b-gray-800'"

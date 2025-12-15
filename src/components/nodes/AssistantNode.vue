@@ -19,6 +19,9 @@ const messagesStore = useMessagesStore()
 
 <template>
   <Node
+    data-testid="flow-node"
+    data-node-role="assistant"
+    :data-node-id="data.message.id"
     bg="pink-100 dark:pink-900"
     :inactive="data.inactive"
     :class="data.selected ? 'b-pink-300 dark:b-pink-700' : 'b-pink-200 dark:b-pink-800'"

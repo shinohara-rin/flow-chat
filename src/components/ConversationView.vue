@@ -185,7 +185,7 @@ useEventListener(containerRef, 'scroll', updateShouldAutoScroll)
 <template>
   <div class="h-full w-full flex flex-col">
     <!-- Messages container -->
-    <div ref="containerRef" class="flex-1 overflow-y-auto p-4 space-y-6">
+    <div ref="containerRef" data-testid="conversation" class="flex-1 overflow-y-auto p-4 space-y-6">
       <!-- System prompt -->
       <div class="mb-6 border border-gray-200 rounded-md p-4 dark:border-gray-700">
         <SystemPrompt />
@@ -194,6 +194,7 @@ useEventListener(containerRef, 'scroll', updateShouldAutoScroll)
       <!-- Messages -->
       <template v-for="message in userAndAssistantMessages" :key="message.id">
         <div
+          :data-testid="`message-${message.role}`"
           class="group flex gap-4"
           :class="{ 'flex-row-reverse': message.role === 'user' }"
           @contextmenu="handleContextMenu($event, message)"

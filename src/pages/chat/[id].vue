@@ -384,6 +384,7 @@ onMounted(async () => {
   <div class="h-full w-full flex flex-col overflow-hidden">
     <VueFlow
       v-show="currentMode === ChatMode.FLOW"
+      data-testid="flow-view"
       class="flex-1"
       :nodes="nodesAndEdges.nodes"
       :edges="nodesAndEdges.edges"
@@ -438,6 +439,7 @@ onMounted(async () => {
       <div class="relative mx-auto w-full max-w-screen-md flex rounded-lg bg-neutral-100 p-2 shadow-lg transition-colors dark:bg-neutral-900">
         <Textarea
           v-model="inputMessage"
+          data-testid="chat-input"
           placeholder="Enter to send message, Shift+Enter for new-line"
           max-h-60vh w-full resize-none border-gray-300 rounded-sm px-3 py-2 outline-none dark:bg-neutral-800 focus:ring-2 focus:ring-black dark:focus:ring-white
           transition="all duration-200 ease-in-out"
@@ -449,7 +451,7 @@ onMounted(async () => {
           :search-term="inputMessage.substring(6)"
           @select-model="handleModelSelect"
         />
-        <Button absolute bottom-3 right-3 @click="handleSendButton">
+        <Button data-testid="chat-send" absolute bottom-3 right-3 @click="handleSendButton">
           Send
         </Button>
         <Dialog v-model:open="showForkWithModelDialog">

@@ -13,6 +13,9 @@ const { defaultTextModel } = storeToRefs(useSettingsStore())
 
 <template>
   <Node
+    data-testid="flow-node"
+    data-node-role="user"
+    :data-node-id="data.message.id"
     bg="sky-100 dark:sky-900"
     :inactive="data.inactive"
     :class="data.selected ? 'b-sky-300 dark:b-sky-700' : 'b-sky-200 dark:b-sky-800'"

@@ -18,24 +18,25 @@ defineEmits<{
 
 <template>
   <div
+    data-testid="node-context-menu"
     class="context-menu fixed z-100 rounded py-2 shadow-lg"
     bg="white dark:gray-800"
     border="~ gray-200 dark:gray-700"
     :style="{ left: `${x}px`, top: `${y}px` }"
   >
-    <div @click="$emit('copy')">
+    <div data-testid="node-menu-copy" @click="$emit('copy')">
       Copy
     </div>
-    <div v-if="role === 'user'" @click="$emit('fork')">
+    <div v-if="role === 'user'" data-testid="node-menu-fork" @click="$emit('fork')">
       Fork
     </div>
-    <div v-if="role === 'user'" @click="$emit('forkWith')">
+    <div v-if="role === 'user'" data-testid="node-menu-fork-with" @click="$emit('forkWith')">
       Fork With...
     </div>
-    <div @click="$emit('focusIn')">
+    <div data-testid="node-menu-focus-in" @click="$emit('focusIn')">
       Focus In
     </div>
-    <div text-red-500 @click="$emit('delete')">
+    <div data-testid="node-menu-delete" text-red-500 @click="$emit('delete')">
       Delete Node
     </div>
   </div>
