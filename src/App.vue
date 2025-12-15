@@ -43,7 +43,7 @@ onMounted(async () => {
     toast.error('Failed to initialize database')
   }
 
-  if (firstHere.value.isFirstHere.value) {
+  if (!(globalThis as any).__FLOW_CHAT_E2E__ && firstHere.value.isFirstHere.value) {
     tutorialStore.showTutorial(firstHere.value)
   }
 })
