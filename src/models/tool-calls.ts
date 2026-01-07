@@ -16,7 +16,7 @@ export function useToolCallModel() {
   const dbStore = useDatabaseStore()
 
   async function create(input: CreateToolCallInput): Promise<ToolCall> {
-    const [created] = await dbStore.withCheckpoint((db) => {
+    const [created] = await dbStore.run((db) => {
       return db.insert(schema.tool_calls).values({
         message_id: input.message_id,
         tool_name: input.tool_name,
@@ -50,7 +50,7 @@ export function useToolCallModel() {
   }
 
   async function updateResult(id: string, result: unknown): Promise<ToolCall> {
-    const [updated] = await dbStore.withCheckpoint((db) => {
+    const [updated] = await dbStore.run((db) => {
       return db.update(schema.tool_calls)
         .set({ result })
         .where(eq(schema.tool_calls.id, id))

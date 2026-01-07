@@ -25,13 +25,13 @@ export function useMessageModel() {
   }
 
   function deleteByIds(ids: string[]) {
-    return dbStore.withCheckpoint((db) => {
+    return dbStore.run((db) => {
       return db.delete(schema.messages).where(inArray(schema.messages.id, ids))
     })
   }
 
   async function create(msg: Omit<Message, 'id'>) {
-    const message = await dbStore.withCheckpoint((db) => {
+    const message = await dbStore.run((db) => {
       return db.insert(schema.messages).values(msg).returning()
     })
 
@@ -39,37 +39,37 @@ export function useMessageModel() {
   }
 
   function update(id: string, msg: Message) {
-    return dbStore.withCheckpoint((db) => {
+    return dbStore.run((db) => {
       return db.update(schema.messages).set(msg).where(eq(schema.messages.id, id))
     })
   }
 
   function appendContent(id: string, content: string) {
-    return dbStore.withCheckpoint((db) => {
+    return dbStore.run((db) => {
       return db.execute(sql`UPDATE messages SET content = content || ${content} WHERE id = ${id}`)
     })
   }
 
   function updateContent(id: string, content: string) {
-    return dbStore.withCheckpoint((db) => {
+    return dbStore.run((db) => {
       return db.update(schema.messages).set({ content }).where(eq(schema.messages.id, id))
     })
   }
 
   function appendSummary(id: string, summary: string) {
-    return dbStore.withCheckpoint((db) => {
+    return dbStore.run((db) => {
       return db.execute(sql`UPDATE messages SET summary = COALESCE(summary, '') || ${summary} WHERE id = ${id}`)
     })
   }
 
   function updateSummary(id: string, summary: string) {
-    return dbStore.withCheckpoint((db) => {
+    return dbStore.run((db) => {
       return db.update(schema.messages).set({ summary }).where(eq(schema.messages.id, id))
     })
   }
 
   function updateShowSummary(id: string, show_summary: boolean) {
-    return dbStore.withCheckpoint((db) => {
+    return dbStore.run((db) => {
       return db.update(schema.messages).set({ show_summary }).where(eq(schema.messages.id, id))
     })
   }
@@ -92,7 +92,7 @@ export function useMessageModel() {
   }
 
   function updateEmbedding(id: string, embedding: number[]) {
-    return dbStore.withCheckpoint((db) => {
+    return dbStore.run((db) => {
       return db.update(schema.messages).set({ embedding }).where(eq(schema.messages.id, id))
     })
   }

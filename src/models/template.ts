@@ -6,7 +6,7 @@ export function useTemplateModel() {
   const dbStore = useDatabaseStore()
 
   async function create(name: string, systemPrompt: string) {
-    const created = await dbStore.withCheckpoint((db) => {
+    const created = await dbStore.run((db) => {
       return db
         .insert(schema.templates)
         .values({
@@ -20,7 +20,7 @@ export function useTemplateModel() {
   }
 
   function update(id: string, name: string, systemPrompt: string) {
-    return dbStore.withCheckpoint((db) => {
+    return dbStore.run((db) => {
       return db.update(schema.templates).set({
         name,
         system_prompt: systemPrompt,
@@ -29,7 +29,7 @@ export function useTemplateModel() {
   }
 
   function destroy(id: string) {
-    return dbStore.withCheckpoint((db) => {
+    return dbStore.run((db) => {
       return db.delete(schema.templates).where(eq(schema.templates.id, id))
     })
   }

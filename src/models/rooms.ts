@@ -7,7 +7,7 @@ export function useRoomModel() {
   const dbStore = useDatabaseStore()
 
   async function create(name: string, templateId?: string) {
-    return (await dbStore.withCheckpoint((db) => {
+    return (await dbStore.run((db) => {
       return db.insert(schema.rooms).values({
         name,
         template_id: templateId || null,
@@ -27,13 +27,13 @@ export function useRoomModel() {
       ...(data.viewport_zoom !== undefined && { viewport_zoom: data.viewport_zoom ?? null }),
     }
 
-    return dbStore.withCheckpoint((db) => {
+    return dbStore.run((db) => {
       return db.update(schema.rooms).set(cleanData).where(eq(schema.rooms.id, id)).returning()
     })
   }
 
   function destroy(id: string) {
-    return dbStore.withCheckpoint((db) => {
+    return dbStore.run((db) => {
       return db.delete(schema.rooms).where(eq(schema.rooms.id, id))
     })
   }
