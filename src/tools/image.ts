@@ -7,6 +7,7 @@ import { withToolCallLog } from './with-tool-call-log'
 interface CreateImageToolOptions {
   apiKey: string
   baseURL: string
+  model?: string
   piniaStore: ReturnType<typeof useMessagesStore>
   messageId: string
 }
@@ -33,7 +34,7 @@ export async function createImageTools(options: CreateImageToolOptions) {
               baseURL: options.baseURL,
               prompt,
               response_format: 'b64_json',
-              model: 'dall-e-3',
+              model: options.model ?? 'dall-e-3',
             })
 
             return {

@@ -7,7 +7,10 @@ import { listModels } from 'xsai'
 
 export const useSettingsStore = defineStore('settings', () => {
   const imageGeneration = useLocalStorage('settings/imageGeneration', {
+    provider: 'openai',
     apiKey: '',
+    openaiApiKey: '',
+    googleApiKey: '',
     baseURL: '',
     model: '',
   })

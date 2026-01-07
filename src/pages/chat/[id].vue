@@ -291,11 +291,28 @@ async function generateResponse(parentId: string | null, provider: ProviderNames
   streamTextAbortControllers.value.set(newMsgId, abortController)
 
   try {
+    let imageApiKey = ''
+    let imageBaseURL = ''
+    let imageModel = ''
+
+    if (settingsStore.imageGeneration.provider === 'google') {
+      imageApiKey = settingsStore.imageGeneration.googleApiKey || ''
+      imageBaseURL = 'https://generativelanguage.googleapis.com/v1beta/openai/'
+      imageModel = 'gemini-2.5-flash-image'
+    }
+    else {
+      // Default to OpenAI
+      imageApiKey = settingsStore.imageGeneration.openaiApiKey || settingsStore.imageGeneration.apiKey || ''
+      imageBaseURL = 'https://api.openai.com/v1'
+      imageModel = 'dall-e-3'
+    }
+
     const tools = {
       tools: [
         ...(await createImageTools({ // TODO: more tools
-          apiKey: settingsStore.imageGeneration.apiKey,
-          baseURL: 'https://api.openai.com/v1',
+          apiKey: imageApiKey,
+          baseURL: imageBaseURL,
+          model: imageModel,
           piniaStore: messagesStore,
           messageId: newMsgId,
         })),
