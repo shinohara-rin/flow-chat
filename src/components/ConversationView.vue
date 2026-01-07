@@ -218,6 +218,10 @@ useEventListener(containerRef, 'scroll', updateShouldAutoScroll)
               :dark="message.role === 'user'"
             />
 
+            <div v-if="message.error" class="text-red-500 text-sm mt-2 border-l-2 border-red-500 pl-2">
+              Error: {{ message.error }}
+            </div>
+
             <div v-if="message.model">
               <div class="mt-2 text-xs opacity-70" font-mono>
                 {{ message.model }}

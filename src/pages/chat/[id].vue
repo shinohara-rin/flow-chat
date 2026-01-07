@@ -378,6 +378,21 @@ async function generateResponse(parentId: string | null, provider: ProviderNames
 
     return newMsgId
   }
+  catch (error) {
+    const err = error as Error
+    if (err.name === 'AbortError') {
+      return null
+    }
+
+    console.error(error)
+    if (err.message.includes('does not support tools')) {
+      await messagesStore.setError(newMsgId, 'This model does not support tools')
+    }
+    else {
+      await messagesStore.setError(newMsgId, err.message || 'Failed to generate response')
+    }
+    return null
+  }
   finally {
     if (streamTextRunIds.value.get(newMsgId) === runId) {
       messagesStore.stopGenerating(newMsgId)
@@ -440,12 +455,8 @@ async function handleSendButton(messageText?: string) {
     if (err.name === 'AbortError') {
       return
     }
-    if (err.message.includes('does not support tools')) {
-      toast.error('This model does not support tools')
-      return
-    }
     console.error(error)
-    toast.error('Failed to generate response') // TODO: show error in message
+    // Errors during generation are already handled in generateResponse
   }
 }
 
@@ -545,6 +556,11 @@ async function handleRegenerate(messageId: string) {
     return
   }
 
+  // Clear error before regenerating
+  if (message.error) {
+    await messagesStore.setError(messageId, null)
+  }
+
   try {
     await generateResponse(message.parent_id, message.provider as ProviderNames, message.model, messageId)
   }
@@ -554,7 +570,7 @@ async function handleRegenerate(messageId: string) {
       return
     }
     console.error(error)
-    toast.error('Failed to regenerate response')
+    // Errors during generation are already handled in generateResponse
   }
 }
 

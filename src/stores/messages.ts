@@ -83,6 +83,15 @@ export const useMessagesStore = defineStore('messages', () => {
       msg.show_summary = show_summary
     })
   }
+
+  async function setError(id: string, error: string | null) {
+    await messageModel.updateError(id, error)
+
+    mutateMessageById(id, (msg) => {
+      msg.error = error
+    })
+  }
+
   async function deleteMessages(ids: string[]) {
     if (ids.length === 0)
       return
@@ -209,6 +218,7 @@ export const useMessagesStore = defineStore('messages', () => {
     appendSummary,
     updateSummary,
     updateShowSummary,
+    setError,
 
     hasChildren,
   }

@@ -11,6 +11,7 @@ export interface Message extends BaseMessage {
   room_id: string | null
   provider: string // provider used to generate this message
   model: string // model used to generate this message
+  error?: string | null
   summary: string | null
   show_summary?: boolean
   memory?: string[]

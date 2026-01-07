@@ -73,6 +73,12 @@ export function useMessageModel() {
       return db.update(schema.messages).set({ show_summary }).where(eq(schema.messages.id, id))
     })
   }
+
+  function updateError(id: string, error: string | null) {
+    return dbStore.withCheckpoint((db) => {
+      return db.update(schema.messages).set({ error }).where(eq(schema.messages.id, id))
+    })
+  }
   function searchByContent(keyword: string, roomId?: string) {
     const conditions = [ilike(schema.messages.content, `%${keyword}%`)]
 
@@ -122,6 +128,6 @@ export function useMessageModel() {
     appendSummary,
     updateSummary,
     updateShowSummary,
-
+    updateError,
   }
 }

@@ -33,6 +33,7 @@ export const messages = pgTable('messages', {
   parent_id: uuid('parent_id'),
   embedding: vector('embedding', { dimensions: 1024 }),
   summary: text('summary'),
+  error: text('error'),
   show_summary: boolean('show_summary').notNull().default(false),
   memory: text('memory').array().notNull().default(sql`ARRAY[]::text[]`),
   created_at: timestamp('created_at').notNull().default(sql`now()`),
