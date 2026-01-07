@@ -1,5 +1,5 @@
 import { generateImage } from '@xsai/generate-image'
-import { describe, expect, it, vi, afterEach } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createImageTools } from './image'
 
 vi.mock('@xsai/generate-image', () => ({
