@@ -1,8 +1,8 @@
-import { setActivePinia, createPinia } from 'pinia'
-import { describe, it, expect, beforeEach } from 'vitest'
+import { createPinia, setActivePinia } from 'pinia'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { useImagesStore } from '../images'
 
-describe('Images Store', () => {
+describe('images store', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
   })
