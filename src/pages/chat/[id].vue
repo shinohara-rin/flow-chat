@@ -27,6 +27,7 @@ import { Textarea } from '~/components/ui/textarea'
 import { isDark } from '~/composables/dark'
 import { useDatabaseStore } from '~/stores/database'
 import { useDialogStore } from '~/stores/dialog'
+import { useImagesStore } from '~/stores/images'
 import { useMessagesStore } from '~/stores/messages'
 import { ChatMode, useModeStore } from '~/stores/mode'
 import { useRoomsStore } from '~/stores/rooms'
@@ -43,6 +44,7 @@ const settingsStore = useSettingsStore()
 const { defaultTextModel, currentProvider } = storeToRefs(settingsStore)
 
 const messagesStore = useMessagesStore()
+const imagesStore = useImagesStore()
 const { hasAnyMessages } = storeToRefs(messagesStore)
 const roomsStore = useRoomsStore()
 
@@ -366,6 +368,7 @@ async function generateResponse(parentId: string | null, provider: ProviderNames
       if (imageToolCall) {
         const result = imageToolCall.result as { imageBase64?: string } | null
         if (result?.imageBase64) {
+          imagesStore.setImage(result.imageBase64)
           await messagesStore.appendContent(newMsgId, `![generated image](data:image/png;base64,${result.imageBase64})`)
           lastCheckedToolCallId = imageToolCall.id
         }
