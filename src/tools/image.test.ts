@@ -1,7 +1,6 @@
+import { generateImage } from '@xsai/generate-image'
 import { describe, expect, it, vi } from 'vitest'
 import { createImageTools } from './image'
-import { generateImage } from '@xsai/generate-image'
-import { tool } from '@xsai/tool'
 
 vi.mock('@xsai/generate-image', () => ({
   generateImage: vi.fn(),
@@ -45,7 +44,7 @@ describe('createImageTools', () => {
   it('should return image base64 on success', async () => {
     const mockGenerateImage = vi.mocked(generateImage)
     mockGenerateImage.mockResolvedValue({
-      image: { base64: 'fake-base64-image' }
+      image: { base64: 'fake-base64-image' },
     } as any)
 
     const mockPiniaStore = {
