@@ -44,7 +44,7 @@ export async function createImageTools(options: CreateImageToolOptions) {
             }
             catch (error) {
               return {
-                message: `Error generating image: ${error instanceof Error ? error.message : String(error)}`,
+                message: `Error generating image: ${error instanceof Error ? error.message : JSON.stringify(error)}`,
               }
             }
           },
