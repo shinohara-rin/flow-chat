@@ -368,8 +368,7 @@ async function generateResponse(parentId: string | null, provider: ProviderNames
       if (imageToolCall) {
         const result = imageToolCall.result as { imageBase64?: string } | null
         if (result?.imageBase64) {
-          imagesStore.setImage(result.imageBase64)
-          await messagesStore.appendContent(newMsgId, `![generated image](data:image/png;base64,${result.imageBase64})`)
+          await imagesStore.appendImageToMessage(newMsgId, result.imageBase64)
           lastCheckedToolCallId = imageToolCall.id
         }
       }
