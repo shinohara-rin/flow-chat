@@ -308,16 +308,22 @@ async function generateResponse(parentId: string | null, provider: ProviderNames
     }
 
     let isSupportTools = false
-    try {
-      const capabilities: Record<string, boolean> = hasCapabilities(
-        provider as ProviderNames,
-        model as ModelIdsByProvider<ProviderNames>,
-        ['tool-call'] as CapabilitiesByModel<ProviderNames, ModelIdsByProvider<ProviderNames>>,
-      )
-      isSupportTools = capabilities['tool-call']
+    const knownCapabilities = settingsStore.getCapabilities(model)
+    if (knownCapabilities?.toolCall !== undefined) {
+      isSupportTools = knownCapabilities.toolCall
     }
-    catch (error) {
-      console.error('Failed to check if model supports tools', error)
+    else {
+      try {
+        const capabilities: Record<string, boolean> = hasCapabilities(
+          provider as ProviderNames,
+          model as ModelIdsByProvider<ProviderNames>,
+          ['tool-call'] as CapabilitiesByModel<ProviderNames, ModelIdsByProvider<ProviderNames>>,
+        )
+        isSupportTools = capabilities['tool-call']
+      }
+      catch (error) {
+        console.error('Failed to check if model supports tools', error)
+      }
     }
 
     const conversationMessages = currentBranch.value.messages

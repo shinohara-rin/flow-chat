@@ -12,12 +12,14 @@ export const useSettingsStore = defineStore('settings', () => {
     model: '',
   })
 
+  const modelsDevData = ref<any>(null)
+
   const configuredTextProviders = useLocalStorage<Provider[]>('settings/configuredTextProviders', [])
   const configuredImageProviders = useLocalStorage<Provider[]>('settings/configuredImageProviders', [])
   const defaultTextModel = useLocalStorage<ModelInfo>('settings/defaultTextModel', {
     provider: '',
     model: '',
-  }) // TODO: auto detect capabilities when selecting model
+  })
   const defaultImageModel = useLocalStorage<ModelInfo>('settings/defaultImageModel', {
     provider: '',
     model: '',
@@ -35,6 +37,52 @@ export const useSettingsStore = defineStore('settings', () => {
   const models = ref<Model[]>([])
   const modelsProvider = ref('')
   const isLoadingModels = ref(false)
+
+  async function fetchModelsDevData() {
+    try {
+      const response = await fetch('https://models.dev/api.json')
+      if (!response.ok)
+        throw new Error('Failed to fetch models.dev data')
+      modelsDevData.value = await response.json()
+    }
+    catch (error) {
+      console.error('Failed to fetch models.dev data:', error)
+    }
+  }
+
+  function getCapabilities(modelId: string) {
+    if (!modelsDevData.value) {
+      return undefined
+    }
+
+    // Try to find the model in the fetched data
+    // Data structure: { [providerId: string]: { models: { [modelId: string]: ModelData } } }
+    let foundModel: any = null
+
+    // Search all providers for the model ID
+    for (const providerKey in modelsDevData.value) {
+      const providerData = modelsDevData.value[providerKey]
+      if (providerData.models && providerData.models[modelId]) {
+        foundModel = providerData.models[modelId]
+        break
+      }
+    }
+
+    if (foundModel) {
+      return {
+        toolCall: foundModel.tool_call,
+        reasoning: foundModel.reasoning,
+      }
+    }
+    return undefined
+  }
+
+  const defaultModelCapabilities = computed(() => {
+    return getCapabilities(defaultTextModel.value.model)
+  })
+
+  // Auto-fetch data on init
+  fetchModelsDevData()
 
   // Fetch available models
   async function fetchModels(providerName?: string) {
@@ -75,5 +123,7 @@ export const useSettingsStore = defineStore('settings', () => {
     modelsProvider,
     isLoadingModels,
     fetchModels,
+    getCapabilities,
+    defaultModelCapabilities,
   }
 })
