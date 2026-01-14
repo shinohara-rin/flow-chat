@@ -23,6 +23,9 @@ type UUID = `${string}-${string}-${string}-${string}-${string}`
 const settingsStore = useSettingsStore()
 const editingProviderId = ref<UUID | null>(null)
 
+const resourceName = ref('')
+const accountId = ref('')
+
 function handleAddProvider() {
   settingsStore.configuredTextProviders.push({
     id: crypto.randomUUID(),
@@ -45,11 +48,36 @@ function handleChangeProvider(selectedProvider: AcceptableValue) {
 
   editingProvider.name = selectedProvider
   const baseURL = providers.find(p => p.name === selectedProvider)?.apiBaseURL ?? ''
+
+  resourceName.value = ''
+  accountId.value = ''
+
   if (typeof baseURL === 'function') {
-    editingProvider.baseURL = baseURL({ resourceName: '', accountId: '' }) // TODO: handle this
+    editingProvider.baseURL = baseURL({ resourceName: resourceName.value, accountId: accountId.value })
   }
   else {
     editingProvider.baseURL = baseURL
+  }
+}
+
+function handleResourceNameChange(value: string | number) {
+  resourceName.value = String(value)
+  updateBaseURL()
+}
+
+function handleAccountIdChange(value: string | number) {
+  accountId.value = String(value)
+  updateBaseURL()
+}
+
+function updateBaseURL() {
+  const editingProvider = settingsStore.configuredTextProviders.find(p => p.id === editingProviderId.value)
+  if (!editingProvider) {
+    return
+  }
+  const baseURL = providers.find(p => p.name === editingProvider.name)?.apiBaseURL
+  if (typeof baseURL === 'function') {
+    editingProvider.baseURL = baseURL({ resourceName: resourceName.value, accountId: accountId.value })
   }
 }
 
@@ -113,6 +141,30 @@ function handleDeleteProvider(provider: Provider) {
               </SelectItem>
             </SelectContent>
           </Select>
+        </div>
+
+        <div v-if="editingProviderId === provider.id && provider.name === 'azure'">
+          <label for="azure-resource-name" class="mb-2 block text-sm font-medium">Resource Name</label>
+          <Input
+            id="azure-resource-name"
+            :model-value="resourceName"
+            type="text"
+            class="w-full border rounded-md p-2 dark:bg-gray-800"
+            placeholder="Enter Azure Resource Name"
+            @update:model-value="handleResourceNameChange"
+          />
+        </div>
+
+        <div v-if="editingProviderId === provider.id && provider.name === 'workers-ai'">
+          <label for="workers-ai-account-id" class="mb-2 block text-sm font-medium">Account ID</label>
+          <Input
+            id="workers-ai-account-id"
+            :model-value="accountId"
+            type="text"
+            class="w-full border rounded-md p-2 dark:bg-gray-800"
+            placeholder="Enter Cloudflare Account ID"
+            @update:model-value="handleAccountIdChange"
+          />
         </div>
 
         <div>
