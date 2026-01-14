@@ -81,10 +81,8 @@ export const useDatabaseStore = defineStore('database', () => {
     return toRaw(_db.value)
   }
 
-  async function withCheckpoint<T>(cb: (db: PgliteDatabase<typeof schema>) => Promise<T>) {
+  async function run<T>(cb: (db: PgliteDatabase<typeof schema>) => Promise<T>) {
     const result = await cb(db())
-    await db().execute('CHECKPOINT;') // TODO: is this necessary?
-
     return result
   }
 
@@ -100,7 +98,7 @@ export const useDatabaseStore = defineStore('database', () => {
     clearDb,
     migrate,
 
-    withCheckpoint,
+    run,
     waitForDbInitialized,
   }
 })

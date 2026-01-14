@@ -75,7 +75,7 @@ export function useMemoryModel() {
       .limit(1))[0]
 
     if (!existing) {
-      const [created] = await dbStore.withCheckpoint(db => db.insert(schema.memories).values({
+      const [created] = await dbStore.run(db => db.insert(schema.memories).values({
         content,
         scope,
         room_id: roomId,
@@ -85,7 +85,7 @@ export function useMemoryModel() {
     }
 
     const merged = mergeTags(safeJsonParseArray(existing.tags), tags)
-    const [updated] = await dbStore.withCheckpoint(db => db.update(schema.memories).set({
+    const [updated] = await dbStore.run(db => db.update(schema.memories).set({
       tags: JSON.stringify(merged),
       updated_at: sql`now()`,
     }).where(eq(schema.memories.id, existing.id)).returning())
@@ -109,7 +109,7 @@ export function useMemoryModel() {
   }
 
   async function deleteById(id: string) {
-    return dbStore.withCheckpoint((db) => {
+    return dbStore.run((db) => {
       return db.delete(schema.memories).where(eq(schema.memories.id, id))
     })
   }
