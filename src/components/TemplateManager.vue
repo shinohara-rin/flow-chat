@@ -26,6 +26,11 @@ const addTemplateForm = ref({
   name: '',
   prompt: '',
   isDefault: false,
+  temperature: undefined as number | undefined,
+  top_p: undefined as number | undefined,
+  max_tokens: undefined as number | undefined,
+  presence_penalty: undefined as number | undefined,
+  frequency_penalty: undefined as number | undefined,
 })
 
 const editTemplateForm = ref({
@@ -33,6 +38,11 @@ const editTemplateForm = ref({
   name: '',
   prompt: '',
   isDefault: false,
+  temperature: undefined as number | undefined,
+  top_p: undefined as number | undefined,
+  max_tokens: undefined as number | undefined,
+  presence_penalty: undefined as number | undefined,
+  frequency_penalty: undefined as number | undefined,
 })
 
 // Confirmation dialogs
@@ -44,6 +54,11 @@ function openAddDialog() {
     name: '',
     prompt: '',
     isDefault: false,
+    temperature: undefined,
+    top_p: undefined,
+    max_tokens: undefined,
+    presence_penalty: undefined,
+    frequency_penalty: undefined,
   }
   showAddDialog.value = true
 }
@@ -55,6 +70,13 @@ async function createTemplate() {
   const created = await templateModel.create(
     addTemplateForm.value.name.trim(),
     addTemplateForm.value.prompt.trim(),
+    {
+      temperature: addTemplateForm.value.temperature,
+      top_p: addTemplateForm.value.top_p,
+      max_tokens: addTemplateForm.value.max_tokens,
+      presence_penalty: addTemplateForm.value.presence_penalty,
+      frequency_penalty: addTemplateForm.value.frequency_penalty,
+    },
   )
   templates.value = await templateModel.getAll()
 
@@ -84,6 +106,11 @@ async function openEditDialog(id: string) {
     name: template.name,
     prompt: template.system_prompt,
     isDefault: settingsStore.defaultTemplateId === id,
+    temperature: template.temperature ?? undefined,
+    top_p: template.top_p ?? undefined,
+    max_tokens: template.max_tokens ?? undefined,
+    presence_penalty: template.presence_penalty ?? undefined,
+    frequency_penalty: template.frequency_penalty ?? undefined,
   }
   showEditDialog.value = true
 }
@@ -96,6 +123,13 @@ async function updateTemplate() {
     editTemplateForm.value.id,
     editTemplateForm.value.name.trim(),
     editTemplateForm.value.prompt.trim(),
+    {
+      temperature: editTemplateForm.value.temperature,
+      top_p: editTemplateForm.value.top_p,
+      max_tokens: editTemplateForm.value.max_tokens,
+      presence_penalty: editTemplateForm.value.presence_penalty,
+      frequency_penalty: editTemplateForm.value.frequency_penalty,
+    },
   )
   templates.value = await templateModel.getAll()
 
@@ -131,8 +165,27 @@ function setAsDefault(id: string) {
 // Close modals on ESC key
 watch([showAddDialog, showEditDialog, showDeleteConfirm], ([add, edit, del]) => {
   if (!add && !edit && !del) {
-    addTemplateForm.value = { name: '', prompt: '', isDefault: false }
-    editTemplateForm.value = { id: '', name: '', prompt: '', isDefault: false }
+    addTemplateForm.value = {
+      name: '',
+      prompt: '',
+      isDefault: false,
+      temperature: undefined,
+      top_p: undefined,
+      max_tokens: undefined,
+      presence_penalty: undefined,
+      frequency_penalty: undefined,
+    }
+    editTemplateForm.value = {
+      id: '',
+      name: '',
+      prompt: '',
+      isDefault: false,
+      temperature: undefined,
+      top_p: undefined,
+      max_tokens: undefined,
+      presence_penalty: undefined,
+      frequency_penalty: undefined,
+    }
     templateToDelete.value = ''
   }
 })
@@ -200,7 +253,7 @@ onMounted(async () => {
 
     <!-- Add Template Dialog -->
     <Dialog v-model:open="showAddDialog">
-      <DialogContent class="max-w-md">
+      <DialogContent class="max-h-[90vh] max-w-md overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add Template</DialogTitle>
         </DialogHeader>
@@ -218,6 +271,75 @@ onMounted(async () => {
               class="min-h-40 border border-gray-300 rounded-md p-2"
             />
           </div>
+
+          <!-- Advanced AI Settings -->
+          <div class="border-t pt-4">
+            <div class="mb-3 text-sm text-gray-500 font-medium">
+              AI Settings (Optional)
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="flex flex-col gap-2">
+                <Label for="add-temperature">Temperature</Label>
+                <Input
+                  id="add-temperature"
+                  v-model.number="addTemplateForm.temperature"
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  max="2"
+                  placeholder="e.g. 0.7"
+                />
+              </div>
+              <div class="flex flex-col gap-2">
+                <Label for="add-top-p">Top P</Label>
+                <Input
+                  id="add-top-p"
+                  v-model.number="addTemplateForm.top_p"
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  max="1"
+                  placeholder="e.g. 1.0"
+                />
+              </div>
+              <div class="flex flex-col gap-2">
+                <Label for="add-max-tokens">Max Tokens</Label>
+                <Input
+                  id="add-max-tokens"
+                  v-model.number="addTemplateForm.max_tokens"
+                  type="number"
+                  step="1"
+                  min="1"
+                  placeholder="e.g. 2000"
+                />
+              </div>
+              <div class="flex flex-col gap-2">
+                <Label for="add-frequency-penalty">Frequency Penalty</Label>
+                <Input
+                  id="add-frequency-penalty"
+                  v-model.number="addTemplateForm.frequency_penalty"
+                  type="number"
+                  step="0.1"
+                  min="-2"
+                  max="2"
+                  placeholder="e.g. 0.0"
+                />
+              </div>
+              <div class="flex flex-col gap-2">
+                <Label for="add-presence-penalty">Presence Penalty</Label>
+                <Input
+                  id="add-presence-penalty"
+                  v-model.number="addTemplateForm.presence_penalty"
+                  type="number"
+                  step="0.1"
+                  min="-2"
+                  max="2"
+                  placeholder="e.g. 0.0"
+                />
+              </div>
+            </div>
+          </div>
+
           <div class="flex items-center gap-2">
             <input
               id="is-default"
@@ -241,7 +363,7 @@ onMounted(async () => {
 
     <!-- Edit Template Dialog -->
     <Dialog v-model:open="showEditDialog">
-      <DialogContent class="max-w-md">
+      <DialogContent class="max-h-[90vh] max-w-md overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Template</DialogTitle>
         </DialogHeader>
@@ -259,6 +381,75 @@ onMounted(async () => {
               class="min-h-40 border border-gray-300 rounded-md p-2"
             />
           </div>
+
+          <!-- Advanced AI Settings -->
+          <div class="border-t pt-4">
+            <div class="mb-3 text-sm text-gray-500 font-medium">
+              AI Settings (Optional)
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="flex flex-col gap-2">
+                <Label for="edit-temperature">Temperature</Label>
+                <Input
+                  id="edit-temperature"
+                  v-model.number="editTemplateForm.temperature"
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  max="2"
+                  placeholder="e.g. 0.7"
+                />
+              </div>
+              <div class="flex flex-col gap-2">
+                <Label for="edit-top-p">Top P</Label>
+                <Input
+                  id="edit-top-p"
+                  v-model.number="editTemplateForm.top_p"
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  max="1"
+                  placeholder="e.g. 1.0"
+                />
+              </div>
+              <div class="flex flex-col gap-2">
+                <Label for="edit-max-tokens">Max Tokens</Label>
+                <Input
+                  id="edit-max-tokens"
+                  v-model.number="editTemplateForm.max_tokens"
+                  type="number"
+                  step="1"
+                  min="1"
+                  placeholder="e.g. 2000"
+                />
+              </div>
+              <div class="flex flex-col gap-2">
+                <Label for="edit-frequency-penalty">Frequency Penalty</Label>
+                <Input
+                  id="edit-frequency-penalty"
+                  v-model.number="editTemplateForm.frequency_penalty"
+                  type="number"
+                  step="0.1"
+                  min="-2"
+                  max="2"
+                  placeholder="e.g. 0.0"
+                />
+              </div>
+              <div class="flex flex-col gap-2">
+                <Label for="edit-presence-penalty">Presence Penalty</Label>
+                <Input
+                  id="edit-presence-penalty"
+                  v-model.number="editTemplateForm.presence_penalty"
+                  type="number"
+                  step="0.1"
+                  min="-2"
+                  max="2"
+                  placeholder="e.g. 0.0"
+                />
+              </div>
+            </div>
+          </div>
+
           <div class="flex items-center gap-2">
             <input
               id="edit-is-default"

@@ -1,11 +1,15 @@
 import { sql } from 'drizzle-orm'
-import { boolean, doublePrecision, index, jsonb, pgTable, text, timestamp, uuid, vector } from 'drizzle-orm/pg-core'
+import { boolean, doublePrecision, index, integer, jsonb, pgTable, text, timestamp, uuid, vector } from 'drizzle-orm/pg-core'
 
 export const templates = pgTable('templates', () => ({
   id: uuid().primaryKey().unique().default(sql`gen_random_uuid()`),
   name: text('name').notNull(),
   system_prompt: text('system_prompt').notNull(),
-  // TODO: temperature or something else AI settings.
+  temperature: doublePrecision('temperature'),
+  top_p: doublePrecision('top_p'),
+  max_tokens: integer('max_tokens'),
+  presence_penalty: doublePrecision('presence_penalty'),
+  frequency_penalty: doublePrecision('frequency_penalty'),
   created_at: timestamp('created_at').notNull().default(sql`now()`),
   updated_at: timestamp('updated_at').notNull().default(sql`now()`),
 }))
