@@ -29,25 +29,17 @@ export async function createImageTools(options: CreateImageToolOptions) {
             parameters: { prompt },
           },
           async () => {
+            const response = await generateImage({
+              apiKey: options.apiKey,
+              baseURL: options.baseURL,
+              prompt,
+              response_format: 'b64_json',
+              model: options.model ?? 'dall-e-3',
+            })
 
-            try {
-                const response = await generateImage({
-                  apiKey: options.apiKey,
-                  baseURL: options.baseURL,
-                  prompt,
-                  response_format: 'b64_json',
-                  model: options.model ?? 'dall-e-3',
-                })
-              })
-              return {
-                message: 'Image generated successfully',
-                imageBase64: response.image.base64,
-              }
-            }
-            catch (error) {
-              return {
-                message: `Error generating image: ${error instanceof Error ? error.message : String(error)}`,
-              }
+            return {
+              message: 'Image generated successfully',
+              imageBase64: response.image.base64,
             }
           },
         )
