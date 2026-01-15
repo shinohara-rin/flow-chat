@@ -7,6 +7,7 @@ import { withToolCallLog } from './with-tool-call-log'
 interface CreateImageToolOptions {
   apiKey: string
   baseURL: string
+  model?: string
   piniaStore: ReturnType<typeof useMessagesStore>
   messageId: string
 }
@@ -28,24 +29,17 @@ export async function createImageTools(options: CreateImageToolOptions) {
             parameters: { prompt },
           },
           async () => {
-            try {
-              const response = await generateImage({
-                apiKey: options.apiKey,
-                baseURL: options.baseURL,
-                prompt,
-                response_format: 'b64_json',
-                model: 'dall-e-3',
-              })
+            const response = await generateImage({
+              apiKey: options.apiKey,
+              baseURL: options.baseURL,
+              prompt,
+              response_format: 'b64_json',
+              model: options.model ?? 'dall-e-3',
+            })
 
-              return {
-                message: 'Image generated successfully',
-                imageBase64: response.image.base64,
-              }
-            }
-            catch (error) {
-              return {
-                message: `Error generating image: ${error instanceof Error ? error.message : String(error)}`,
-              }
+            return {
+              message: 'Image generated successfully',
+              imageBase64: response.image.base64,
             }
           },
         )

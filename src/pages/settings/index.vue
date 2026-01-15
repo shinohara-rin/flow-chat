@@ -52,6 +52,11 @@ function handleSummaryModelSelect(selectedModelValue: string) {
   summaryTextModel.value.model = selectedModelValue
 }
 
+// Migrate legacy image generation API key
+if (imageGeneration.value.apiKey && !imageGeneration.value.openaiApiKey) {
+  imageGeneration.value.openaiApiKey = imageGeneration.value.apiKey
+}
+
 function handleTextProviderChange(selectedProvider: AcceptableValue) {
   if (typeof selectedProvider !== 'string') {
     console.error('Provider is not a string', selectedProvider)
@@ -222,18 +227,45 @@ onMounted(async () => {
         <h2 class="mb-4 text-xl font-semibold">
           Image Generation Settings
         </h2>
-        <div class="mb-4 text-sm text-gray-500">
-          Currently only OpenAI is supported
-        </div>
         <div class="space-y-4">
           <div>
-            <label for="image-api-key" class="mb-1 block text-sm font-medium">API Key</label>
+            <label for="image-provider" class="mb-1 block text-sm font-medium">Provider</label>
+            <Select
+              id="image-provider"
+              v-model="imageGeneration.provider"
+              class="w-full border rounded-md p-2 dark:bg-gray-800"
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select provider" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="openai">
+                  OpenAI
+                </SelectItem>
+                <SelectItem value="google">
+                  Google Nano Banana
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div v-if="imageGeneration.provider === 'openai'">
+            <label for="image-api-key-openai" class="mb-1 block text-sm font-medium">OpenAI API Key</label>
             <Input
-              id="image-api-key"
-              v-model="imageGeneration.apiKey"
+              id="image-api-key-openai"
+              v-model="imageGeneration.openaiApiKey"
               type="password"
               class="w-full border rounded-md p-2 dark:bg-gray-800"
-              placeholder="Enter your API key"
+              placeholder="Enter your OpenAI API key"
+            />
+          </div>
+          <div v-else-if="imageGeneration.provider === 'google'">
+            <label for="image-api-key-google" class="mb-1 block text-sm font-medium">Google API Key</label>
+            <Input
+              id="image-api-key-google"
+              v-model="imageGeneration.googleApiKey"
+              type="password"
+              class="w-full border rounded-md p-2 dark:bg-gray-800"
+              placeholder="Enter your Google API key"
             />
           </div>
         </div>
